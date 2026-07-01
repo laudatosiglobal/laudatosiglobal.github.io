@@ -29,6 +29,8 @@ function uniqueValues(rows, field) {
 
 function populateSelect(id, values) {
   const select = document.getElementById(id);
+  select.innerHTML = `<option value="">All</option>`;
+
   values.forEach(value => {
     const option = document.createElement("option");
     option.value = value;
@@ -50,23 +52,28 @@ function initMap() {
 }
 
 function hasCoordinates(row) {
-  const lat = parseFloat(row[fields.lat]);
-  const lon = parseFloat(row[fields.lon]);
+  const lat = parseFloat(clean(row[fields.lat]));
+  const lon = parseFloat(clean(row[fields.lon]));
   return Number.isFinite(lat) && Number.isFinite(lon);
 }
 
 function popupHtml(row) {
-  const name = clean(row[fields.name]);
+  const name = clean(row[fields.name]) || "Initiative";
   const type = clean(row[fields.type]);
   const location = clean(row[fields.location]);
   const country = clean(row[fields.country]);
+  const region = clean(row[fields.region]);
+  const goals = clean(row[fields.goals]);
   const website = clean(row[fields.website]);
 
   return `
-    <strong>${name}</strong><br>
-    ${type ? `${type}<br>` : ""}
-    ${location || country ? `${location}${location && country ? ", " : ""}${country}<br>` : ""}
-    ${website ? `<a href="${website}" target="_blank" rel="noopener">Visit website</a>` : ""}
+    <div class="popup-card">
+      <strong>${name}</strong><br>
+      ${type ? `<span>${type}</span><br>` : ""}
+      ${[location, country, region].filter(Boolean).join(" · ")}<br>
+      ${goals ? `<p>${goals}</p>` : ""}
+      ${website ? `<a href="${website}" target="_blank" rel="noopener">Visit website</a>` : ""}
+    </div>
   `;
 }
 
@@ -76,11 +83,10 @@ function updateMarkers(rows) {
   const coordinateRows = rows.filter(hasCoordinates);
 
   coordinateRows.forEach(row => {
-    const marker = L.marker([
-      parseFloat(row[fields.lat]),
-      parseFloat(row[fields.lon])
-    ]);
+    const lat = parseFloat(clean(row[fields.lat]));
+    const lon = parseFloat(clean(row[fields.lon]));
 
+    const marker = L.marker([lat, lon]);
     marker.bindPopup(popupHtml(row));
     markers.addLayer(marker);
   });
@@ -92,19 +98,21 @@ function updateMarkers(rows) {
 }
 
 function cardHtml(row) {
-  const name = clean(row[fields.name]);
+  const name = clean(row[fields.name]) || "Initiative";
   const type = clean(row[fields.type]);
   const location = clean(row[fields.location]);
   const country = clean(row[fields.country]);
   const region = clean(row[fields.region]);
   const goals = clean(row[fields.goals]);
   const website = clean(row[fields.website]);
+  const mapped = hasCoordinates(row);
 
   return `
     <article class="initiative-card">
       <h3>${name}</h3>
       <div class="meta">${[type, location, country, region].filter(Boolean).join(" · ")}</div>
       ${goals ? `<p>${goals}</p>` : ""}
+      <p class="note">${mapped ? "Mapped location available." : "Location not yet mapped."}</p>
       ${website ? `<a href="${website}" target="_blank" rel="noopener">Website</a>` : ""}
     </article>
   `;
@@ -133,6 +141,10 @@ function updateStats(rows) {
   document.getElementById("stat-countries").textContent = uniqueValues(rows, fields.country).length;
   document.getElementById("stat-regions").textContent = uniqueValues(rows, fields.region).length;
   document.getElementById("stat-types").textContent = uniqueValues(rows, fields.type).length;
+
+  const mappedCount = rows.filter(hasCoordinates).length;
+  const mappedEl = document.getElementById("stat-mapped");
+  if (mappedEl) mappedEl.textContent = mappedCount;
 }
 
 function applyFilters() {
@@ -161,8 +173,9 @@ function setupFilters() {
   populateSelect("typeFilter", uniqueValues(initiatives, fields.type));
 
   ["searchInput", "regionFilter", "countryFilter", "typeFilter"].forEach(id => {
-    document.getElementById(id).addEventListener("input", applyFilters);
-    document.getElementById(id).addEventListener("change", applyFilters);
+    const element = document.getElementById(id);
+    element.addEventListener("input", applyFilters);
+    element.addEventListener("change", applyFilters);
   });
 }
 
