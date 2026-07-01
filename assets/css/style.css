@@ -350,3 +350,76 @@ footer {
     grid-template-columns: 1fr;
   }
 }
+
+.map-full {
+  margin-top: 28px;
+  background: #ffffff;
+  border: 1px solid #e7e4dd;
+  border-radius: 18px;
+  overflow: hidden;
+}
+
+.map-full #map {
+  width: 100%;
+  height: 620px;
+}
+
+.selected-card {
+  margin-top: 28px;
+  background: #ffffff;
+  border: 1px solid #e7e4dd;
+  border-radius: 18px;
+  padding: 32px;
+}
+
+.selected-card > p {
+  margin: 0;
+  color: #5e6b63;
+}
+
+.initiative-detail-card h2 {
+  margin-top: 6px;
+  margin-bottom: 14px;
+}
+
+.card-kicker {
+  color: #0f5132;
+  font-size: 0.78rem;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.initiative-meta {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-bottom: 24px;
+}
+
+.initiative-meta span {
+  background: #f3f0e8;
+  border: 1px solid #e7e4dd;
+  border-radius: 999px;
+  padding: 6px 11px;
+  font-size: 0.88rem;
+  color: #23352d;
+}
+
+.detail-block {
+  margin-top: 22px;
+}
+
+.detail-block h3 {
+  margin: 0 0 6px;
+  color: #0f5132;
+  font-size: 1rem;
+}
+
+.detail-block p {
+  margin: 0;
+}
+
+.detail-button {
+  margin-top: 26px;
+}

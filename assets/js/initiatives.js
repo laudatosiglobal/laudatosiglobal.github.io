@@ -57,24 +57,79 @@ function hasCoordinates(row) {
   return Number.isFinite(lat) && Number.isFinite(lon);
 }
 
-function popupHtml(row) {
+function selectedCardHtml(row) {
   const name = clean(row[fields.name]) || "Initiative";
   const type = clean(row[fields.type]);
   const location = clean(row[fields.location]);
   const country = clean(row[fields.country]);
   const region = clean(row[fields.region]);
+  const leadership = clean(row[fields.leadership]);
   const goals = clean(row[fields.goals]);
+  const activities = clean(row[fields.activities]);
+  const outcomes = clean(row[fields.outcomes]);
   const website = clean(row[fields.website]);
+  const contact = clean(row[fields.contact]);
 
   return `
-    <div class="popup-card">
-      <strong>${name}</strong><br>
-      ${type ? `<span>${type}</span><br>` : ""}
-      ${[location, country, region].filter(Boolean).join(" · ")}<br>
-      ${goals ? `<p>${goals}</p>` : ""}
-      ${website ? `<a href="${website}" target="_blank" rel="noopener">Visit website</a>` : ""}
-    </div>
+    <article class="initiative-detail-card">
+      <div class="card-kicker">Selected Initiative</div>
+      <h2>${name}</h2>
+
+      <div class="initiative-meta">
+        ${type ? `<span>${type}</span>` : ""}
+        ${location ? `<span>${location}</span>` : ""}
+        ${country ? `<span>${country}</span>` : ""}
+        ${region ? `<span>${region}</span>` : ""}
+      </div>
+
+      ${leadership ? `
+        <div class="detail-block">
+          <h3>Leadership</h3>
+          <p>${leadership}</p>
+        </div>
+      ` : ""}
+
+      ${goals ? `
+        <div class="detail-block">
+          <h3>Goals</h3>
+          <p>${goals}</p>
+        </div>
+      ` : ""}
+
+      ${activities ? `
+        <div class="detail-block">
+          <h3>Major Activities</h3>
+          <p>${activities}</p>
+        </div>
+      ` : ""}
+
+      ${outcomes ? `
+        <div class="detail-block">
+          <h3>Key Outcomes / Accomplishments</h3>
+          <p>${outcomes}</p>
+        </div>
+      ` : ""}
+
+      ${contact ? `
+        <div class="detail-block">
+          <h3>Contact</h3>
+          <p>${contact}</p>
+        </div>
+      ` : ""}
+
+      ${website ? `
+        <a class="button detail-button" href="${website}" target="_blank" rel="noopener">
+          Visit website
+        </a>
+      ` : ""}
+    </article>
   `;
+}
+
+function updateSelectedCard(row) {
+  const panel = document.getElementById("selectedInitiative");
+  panel.innerHTML = selectedCardHtml(row);
+  panel.scrollIntoView({ behavior: "smooth", block: "nearest" });
 }
 
 function updateMarkers(rows) {
@@ -87,7 +142,12 @@ function updateMarkers(rows) {
     const lon = parseFloat(clean(row[fields.lon]));
 
     const marker = L.marker([lat, lon]);
-    marker.bindPopup(popupHtml(row));
+
+    marker.on("click", () => {
+      updateSelectedCard(row);
+    });
+
+    marker.bindTooltip(clean(row[fields.name]) || "Initiative");
     markers.addLayer(marker);
   });
 
@@ -95,44 +155,12 @@ function updateMarkers(rows) {
     const group = L.featureGroup(markers.getLayers());
     map.fitBounds(group.getBounds().pad(0.15));
   }
-}
 
-function cardHtml(row) {
-  const name = clean(row[fields.name]) || "Initiative";
-  const type = clean(row[fields.type]);
-  const location = clean(row[fields.location]);
-  const country = clean(row[fields.country]);
-  const region = clean(row[fields.region]);
-  const goals = clean(row[fields.goals]);
-  const website = clean(row[fields.website]);
-  const mapped = hasCoordinates(row);
-
-  return `
-    <article class="initiative-card">
-      <h3>${name}</h3>
-      <div class="meta">${[type, location, country, region].filter(Boolean).join(" · ")}</div>
-      ${goals ? `<p>${goals}</p>` : ""}
-      <p class="note">${mapped ? "Mapped location available." : "Location not yet mapped."}</p>
-      ${website ? `<a href="${website}" target="_blank" rel="noopener">Website</a>` : ""}
-    </article>
-  `;
-}
-
-function renderList(rows) {
-  const list = document.getElementById("initiativeList");
-  const title = document.getElementById("resultsTitle");
-
-  title.textContent = `${rows.length} initiative${rows.length === 1 ? "" : "s"}`;
-
-  if (rows.length === 0) {
-    list.innerHTML = "<p>No initiatives match the selected filters.</p>";
-    return;
-  }
-
-  list.innerHTML = rows.slice(0, 80).map(cardHtml).join("");
-
-  if (rows.length > 80) {
-    list.innerHTML += `<p class="note">Showing first 80 results. Refine your search to narrow the list.</p>`;
+  const panel = document.getElementById("selectedInitiative");
+  if (coordinateRows.length === 0) {
+    panel.innerHTML = `<p>No mapped initiatives match the selected filters.</p>`;
+  } else {
+    panel.innerHTML = `<p>Select an initiative on the map to view details.</p>`;
   }
 }
 
@@ -156,7 +184,6 @@ function applyFilters() {
   });
 
   updateStats(filtered);
-  renderList(filtered);
   updateMarkers(filtered);
 }
 
@@ -180,15 +207,13 @@ document.addEventListener("DOMContentLoaded", () => {
     skipEmptyLines: true,
     complete: results => {
       initiatives = results.data.filter(row => clean(row[fields.name]));
-      filtered = initiatives;
 
       setupFilters();
       updateStats(initiatives);
-      renderList(initiatives);
       updateMarkers(initiatives);
     },
     error: error => {
-      document.getElementById("initiativeList").innerHTML =
+      document.getElementById("selectedInitiative").innerHTML =
         `<p>Could not load initiatives.csv: ${error.message}</p>`;
     }
   });
