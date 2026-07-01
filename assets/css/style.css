@@ -189,31 +189,13 @@ p {
   background: white;
 }
 
-.map-grid {
-  display: grid;
-  grid-template-columns: 1.25fr 0.75fr;
-  gap: 18px;
-  min-height: 640px;
-}
+
 
 #map {
   height: 640px;
   border-radius: 18px;
   border: 1px solid var(--border);
   background: #e9efe9;
-}
-
-.side-panel {
-  background: white;
-  border: 1px solid var(--border);
-  border-radius: 18px;
-  padding: 22px;
-  overflow: auto;
-  max-height: 640px;
-}
-
-.side-panel h2 {
-  font-size: 1.8rem;
 }
 
 .initiative-card {
