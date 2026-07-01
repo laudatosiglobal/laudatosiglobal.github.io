@@ -139,11 +139,7 @@ function renderList(rows) {
 function updateStats(rows) {
   document.getElementById("stat-total").textContent = rows.length;
   document.getElementById("stat-countries").textContent = uniqueValues(rows, fields.country).length;
-  document.getElementById("stat-regions").textContent = uniqueValues(rows, 
-
-  const mappedCount = rows.filter(hasCoordinates).length;
-  const mappedEl = document.getElementById("stat-mapped");
-  if (mappedEl) mappedEl.textContent = mappedCount;
+  document.getElementById("stat-regions").textContent = uniqueValues(rows, fields.region).length;
 }
 
 function applyFilters() {
@@ -152,12 +148,12 @@ function applyFilters() {
   const country = clean(document.getElementById("countryFilter").value);
 
   filtered = initiatives.filter(row => {
-  const combined = Object.values(row).join(" ").toLowerCase();
+    const combined = Object.values(row).join(" ").toLowerCase();
 
-  return (!q || combined.includes(q)) &&
-         (!region || clean(row[fields.region]) === region) &&
-         (!country || clean(row[fields.country]) === country);
-});		
+    return (!q || combined.includes(q)) &&
+           (!region || clean(row[fields.region]) === region) &&
+           (!country || clean(row[fields.country]) === country);
+  });
 
   updateStats(filtered);
   renderList(filtered);
