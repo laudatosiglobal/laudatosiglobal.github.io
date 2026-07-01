@@ -139,8 +139,7 @@ function renderList(rows) {
 function updateStats(rows) {
   document.getElementById("stat-total").textContent = rows.length;
   document.getElementById("stat-countries").textContent = uniqueValues(rows, fields.country).length;
-  document.getElementById("stat-regions").textContent = uniqueValues(rows, fields.region).length;
-  document.getElementById("stat-types").textContent = uniqueValues(rows, fields.type).length;
+  document.getElementById("stat-regions").textContent = uniqueValues(rows, 
 
   const mappedCount = rows.filter(hasCoordinates).length;
   const mappedEl = document.getElementById("stat-mapped");
@@ -151,16 +150,14 @@ function applyFilters() {
   const q = clean(document.getElementById("searchInput").value).toLowerCase();
   const region = clean(document.getElementById("regionFilter").value);
   const country = clean(document.getElementById("countryFilter").value);
-  const type = clean(document.getElementById("typeFilter").value);
 
   filtered = initiatives.filter(row => {
-    const combined = Object.values(row).join(" ").toLowerCase();
+  const combined = Object.values(row).join(" ").toLowerCase();
 
-    return (!q || combined.includes(q)) &&
-           (!region || clean(row[fields.region]) === region) &&
-           (!country || clean(row[fields.country]) === country) &&
-           (!type || clean(row[fields.type]) === type);
-  });
+  return (!q || combined.includes(q)) &&
+         (!region || clean(row[fields.region]) === region) &&
+         (!country || clean(row[fields.country]) === country);
+});		
 
   updateStats(filtered);
   renderList(filtered);
@@ -170,9 +167,8 @@ function applyFilters() {
 function setupFilters() {
   populateSelect("regionFilter", uniqueValues(initiatives, fields.region));
   populateSelect("countryFilter", uniqueValues(initiatives, fields.country));
-  populateSelect("typeFilter", uniqueValues(initiatives, fields.type));
 
-  ["searchInput", "regionFilter", "countryFilter", "typeFilter"].forEach(id => {
+  ["searchInput", "regionFilter", "countryFilter"].forEach(id => {
     const element = document.getElementById(id);
     element.addEventListener("input", applyFilters);
     element.addEventListener("change", applyFilters);
