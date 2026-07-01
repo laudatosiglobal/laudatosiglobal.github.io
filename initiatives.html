@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Initiatives | Global Alliance for Laudato Si’</title>
+
+  <link rel="stylesheet" href="assets/css/style.css" />
+
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+  <link rel="stylesheet" href="https://unpkg.com/leaflet.markercluster@1.5.3/dist/MarkerCluster.css" />
+  <link rel="stylesheet" href="https://unpkg.com/leaflet.markercluster@1.5.3/dist/MarkerCluster.Default.css" />
+</head>
+
+<body>
+  <header class="site-header">
+    <a class="logo" href="index.html">Global Alliance<br>for Laudato Si’</a>
+    <nav>
+      <a href="index.html">Home</a>
+      <a href="index.html#about">About</a>
+      <a href="initiatives.html">Initiatives</a>
+      <a href="index.html#contact">Contact</a>
+    </nav>
+  </header>
+
+  <main>
+    <section class="page-hero">
+      <div class="content">
+        <h1>Explore initiatives</h1>
+        <p>
+          Search and explore initiatives, universities, partners and sustainability
+          leaders connected to the Global Alliance for Laudato Si’.
+        </p>
+      </div>
+    </section>
+
+    <section class="directory-section">
+      <div class="content">
+        <div class="stats">
+          <div><strong id="stat-total">0</strong><span>Initiatives</span></div>
+          <div><strong id="stat-countries">0</strong><span>Countries</span></div>
+          <div><strong id="stat-regions">0</strong><span>Regions</span></div>
+          <div><strong id="stat-types">0</strong><span>Types</span></div>
+        </div>
+
+        <div class="filters">
+          <input id="searchInput" type="search" placeholder="Search by initiative, location, country, or keyword" />
+          <select id="regionFilter"><option value="">All regions</option></select>
+          <select id="countryFilter"><option value="">All countries</option></select>
+          <select id="typeFilter"><option value="">All types</option></select>
+        </div>
+
+        <div class="map-grid">
+          <div id="map"></div>
+          <div class="side-panel">
+            <h2 id="resultsTitle">Initiatives</h2>
+            <div id="initiativeList"></div>
+          </div>
+        </div>
+
+        <p class="note">
+          Map pins require Latitude and Longitude columns in the CSV. The directory
+          works immediately; map markers will appear as coordinates are added.
+        </p>
+      </div>
+    </section>
+  </main>
+
+  <footer>
+    © 2026 Global Alliance for Laudato Si’. Prototype website.
+  </footer>
+
+  <script src="https://unpkg.com/papaparse@5.4.1/papaparse.min.js"></script>
+  <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+  <script src="https://unpkg.com/leaflet.markercluster@1.5.3/dist/leaflet.markercluster.js"></script>
+  <script src="assets/js/initiatives.js"></script>
+</body>
+</html>
