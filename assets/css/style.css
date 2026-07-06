@@ -461,3 +461,14 @@ footer {
     grid-template-columns: 1fr;
   }
 }
+
+.logo-tagline {
+  display: block;
+  margin-top: 8px;
+  font-family: Arial, sans-serif;
+  font-size: 0.72rem;
+  font-weight: 400;
+  line-height: 1.35;
+  color: var(--muted);
+  letter-spacing: 0.02em;
+}
