@@ -19,12 +19,16 @@ body {
 }
 
 .site-header {
-  background: var(--white);
+  background: rgba(255, 255, 255, 0.96);
   border-bottom: 1px solid var(--border);
-  padding: 22px 8%;
+  padding: 18px 8%;
   display: flex;
   justify-content: space-between;
   align-items: center;
+  position: sticky;
+  top: 0;
+  z-index: 1000;
+  backdrop-filter: blur(8px);
 }
 
 .logo {
@@ -55,7 +59,7 @@ section { padding: 75px 8%; }
 }
 
 .hero {
-  padding: 95px 8% 85px;
+  padding: 90px 8% 80px;
   background:
     radial-gradient(circle at top right, rgba(15, 81, 50, 0.10), transparent 35%),
     linear-gradient(135deg, #ffffff 0%, var(--cream) 70%);
@@ -87,7 +91,6 @@ h1 {
   line-height: 0.98;
   color: var(--green-dark);
   margin: 0 0 28px;
-  max-width: 900px;
 }
 
 h2 {
@@ -109,6 +112,10 @@ p {
   font-size: 1.15rem;
   color: #263b32;
   margin-bottom: 34px;
+}
+
+a {
+  color: var(--green);
 }
 
 .buttons {
@@ -154,6 +161,28 @@ p {
 }
 
 .contact-card a { text-decoration: underline; }
+
+/* About */
+
+.about-grid {
+  display: grid;
+  grid-template-columns: 0.95fr 1.05fr;
+  gap: 56px;
+  align-items: start;
+}
+
+.about-visual img {
+  width: 100%;
+  display: block;
+  border-radius: 18px;
+  object-fit: cover;
+}
+
+.about-caption {
+  margin-top: 18px;
+  font-size: 0.98rem;
+  color: var(--muted);
+}
 
 /* News */
 
@@ -408,6 +437,7 @@ footer {
   }
 
   .hero-split .hero-content,
+  .about-grid,
   .split,
   .featured-news,
   .news-grid {
@@ -434,41 +464,4 @@ footer {
     padding-left: 6%;
     padding-right: 6%;
   }
-}
-
-.about-grid {
-  display: grid;
-  grid-template-columns: 0.9fr 1.1fr;
-  gap: 56px;
-  align-items: start;
-}
-
-.about-visual img {
-  width: 100%;
-  display: block;
-  border-radius: 18px;
-  object-fit: cover;
-}
-
-.about-caption {
-  margin-top: 18px;
-  font-size: 1rem;
-  color: var(--muted);
-}
-
-@media (max-width: 900px) {
-  .about-grid {
-    grid-template-columns: 1fr;
-  }
-}
-
-.logo-tagline {
-  display: block;
-  margin-top: 8px;
-  font-family: Arial, sans-serif;
-  font-size: 0.72rem;
-  font-weight: 400;
-  line-height: 1.35;
-  color: var(--muted);
-  letter-spacing: 0.02em;
 }
