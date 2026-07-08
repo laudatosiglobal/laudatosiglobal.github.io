@@ -390,7 +390,7 @@ a {
 
 .map-workspace {
   display: grid;
-  grid-template-columns: 1.35fr 0.65fr;
+  grid-template-columns: 1.6fr 0.4fr;
   gap: 24px;
   align-items: stretch;
 }

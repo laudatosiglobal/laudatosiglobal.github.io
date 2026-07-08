@@ -53,7 +53,7 @@ function populateSelect(id, values, label) {
 }
 
 function initMap() {
-  map = L.map("map", { scrollWheelZoom: false }).setView([20, 0], 2);
+  map = L.map("map", { scrollWheelZoom: true }).setView([20, 0], 2);
 
   L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", {
     maxZoom: 18,
@@ -256,7 +256,7 @@ function updateMarkers(rows) {
 
   if (coordinateRows.length > 0) {
     const group = L.featureGroup(markers.getLayers());
-    map.fitBounds(group.getBounds().pad(0.15));
+    map.fitBounds(group.getBounds().pad(0.08));
     document.getElementById("selectedInitiative").innerHTML =
       `<p>Select a marker on the map to view details.</p>`;
   } else {
