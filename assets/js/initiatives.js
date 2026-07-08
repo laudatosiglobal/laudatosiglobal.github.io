@@ -3,6 +3,8 @@ let filtered = [];
 let map;
 let markers;
 
+let previousClusterHtml = "";
+
 const initiativeFields = {
   name: "Initiative / Organization",
   type: "Type",
@@ -60,27 +62,31 @@ function initMap() {
     attribution: "&copy; OpenStreetMap contributors"
   }).addTo(map);
 
-markers = L.markerClusterGroup({
-  maxClusterRadius: 35,
-  spiderfyOnMaxZoom: true,
-  showCoverageOnHover: false,
-  zoomToBoundsOnClick: false,
-  disableClusteringAtZoom: 8,
+  markers = L.markerClusterGroup({
+    maxClusterRadius: 35,
+    spiderfyOnMaxZoom: true,
+    showCoverageOnHover: false,
+    zoomToBoundsOnClick: false,
+    disableClusteringAtZoom: 8,
 
-  iconCreateFunction: function (cluster) {
-    return L.divIcon({
-      html: `<div class="neutral-cluster">${cluster.getChildCount()}</div>`,
-      className: "neutral-cluster-wrapper",
-      iconSize: [40, 40]
-    });
-  }
-});
+    iconCreateFunction: function (cluster) {
+      return L.divIcon({
+        html: `<div class="neutral-cluster">${cluster.getChildCount()}</div>`,
+        className: "neutral-cluster-wrapper",
+        iconSize: [40, 40]
+      });
+    }
+  });
 
-markers.on("clusterclick", function (event) {
-  const childMarkers = event.layer.getAllChildMarkers();
-  const rows = childMarkers.map(marker => marker.record).filter(Boolean);
-  showClusterList(rows);
-});
+  markers.on("clusterclick", function (event) {
+    const childMarkers = event.layer.getAllChildMarkers();
+    const rows = childMarkers.map(marker => marker.record).filter(Boolean);
+
+    showClusterList(rows);
+
+    L.DomEvent.preventDefault(event);
+    return false;
+  });
 
   map.addLayer(markers);
 }
@@ -152,6 +158,12 @@ function markerIcon(category) {
 
 function selectedCardHtml(row) {
   return `
+    ${previousClusterHtml ? `
+      <button class="back-button" onclick="showPreviousCluster()">
+        ← Back to list
+      </button>
+    ` : ""}
+
     <article class="initiative-detail-card">
       <div class="card-kicker">${row.category}</div>
       <h2>${row.name || "Record"}</h2>
@@ -206,10 +218,25 @@ function updateSelectedCard(row) {
   panel.scrollIntoView({ behavior: "smooth", block: "nearest" });
 }
 
+function showPreviousCluster() {
+  const panel = document.getElementById("selectedInitiative");
+  panel.innerHTML = previousClusterHtml;
+
+  panel.querySelectorAll(".cluster-item").forEach(button => {
+    button.addEventListener("click", () => {
+      const index = Number(button.dataset.index);
+      updateSelectedCard(currentClusterRows[index]);
+    });
+  });
+}
+
+let currentClusterRows = [];
+
 function showClusterList(rows) {
   const panel = document.getElementById("selectedInitiative");
+  currentClusterRows = rows;
 
-  panel.innerHTML = `
+  const html = `
     <article class="initiative-detail-card">
       <div class="card-kicker">Cluster</div>
       <h2>${rows.length} records in this area</h2>
@@ -225,6 +252,9 @@ function showClusterList(rows) {
       </div>
     </article>
   `;
+
+  previousClusterHtml = html;
+  panel.innerHTML = html;
 
   panel.querySelectorAll(".cluster-item").forEach(button => {
     button.addEventListener("click", () => {
@@ -249,16 +279,21 @@ function updateMarkers(rows) {
 
     marker.record = row;
 
-    marker.on("click", () => updateSelectedCard(row));
+    marker.on("click", () => {
+      previousClusterHtml = "";
+      updateSelectedCard(row);
+    });
+
     marker.bindTooltip(row.name || row.subtitle || "Record");
     markers.addLayer(marker);
   });
 
   if (coordinateRows.length > 0) {
     const group = L.featureGroup(markers.getLayers());
-    map.fitBounds(group.getBounds().pad(0.08));
+    map.fitBounds(group.getBounds().pad(0.08), { maxZoom: 5 });
+
     document.getElementById("selectedInitiative").innerHTML =
-      `<p>Select a marker on the map to view details.</p>`;
+      `<p>Select a marker or cluster on the map to view details.</p>`;
   } else {
     document.getElementById("selectedInitiative").innerHTML =
       `<p>No mapped records match the selected filters.</p>`;
@@ -283,6 +318,9 @@ function applyFilters() {
            (!region || row.region === region) &&
            (!country || row.country === country);
   });
+
+  previousClusterHtml = "";
+  currentClusterRows = [];
 
   updateStats(filtered);
   updateMarkers(filtered);
@@ -329,4 +367,4 @@ document.addEventListener("DOMContentLoaded", () => {
     updateStats(records);
     updateMarkers(records);
   });
-});s
+});

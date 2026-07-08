@@ -596,3 +596,17 @@ footer {
     padding-right: 6%;
   }
 }
+.back-button{
+    margin-bottom:18px;
+    padding:8px 14px;
+    border:1px solid var(--border);
+    background:#fff;
+    border-radius:8px;
+    cursor:pointer;
+    color:var(--green);
+    font-weight:600;
+}
+
+.back-button:hover{
+    background:#f7f7f7;
+}
