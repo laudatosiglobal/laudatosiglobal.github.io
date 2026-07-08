@@ -10,7 +10,7 @@
 
 html {
   scroll-behavior: smooth;
-  scroll-padding-top: 150px;
+  scroll-padding-top: 120px;
 }
 
 * {
@@ -388,13 +388,6 @@ a {
   font-weight: 600;
 }
 
-.map-workspace {
-  display: grid;
-  grid-template-columns: 1.6fr 0.4fr;
-  gap: 24px;
-  align-items: stretch;
-}
-
 .map-full {
   background: #ffffff;
   border: 1px solid var(--border);
@@ -416,12 +409,6 @@ a {
   border: 1px solid var(--border);
   border-radius: 18px;
   padding: 32px;
-}
-
-.map-workspace .selected-card {
-  margin-top: 0;
-  max-height: 520px;
-  overflow-y: auto;
 }
 
 .selected-card > p {
@@ -580,14 +567,13 @@ footer {
     margin: 0 18px 0 0;
   }
 
-  .hero-split .hero-content,
-  .about-grid,
-  .split,
-  .featured-news,
-  .news-grid,
-  .map-workspace {
-    grid-template-columns: 1fr;
-  }
+.hero-split .hero-content,
+.about-grid,
+.split,
+.featured-news,
+.news-grid {
+  grid-template-columns: 1fr;
+}
 
   .hero-image img {
     height: 340px;
@@ -601,10 +587,6 @@ footer {
   #map,
   .map-full #map {
     height: 480px;
-  }
-
-  .map-workspace .selected-card {
-    max-height: none;
   }
 
   section,
