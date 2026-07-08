@@ -471,3 +471,44 @@ footer {
     padding-right: 6%;
   }
 }
+
+.map-legend {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 18px;
+  margin: 10px 0 16px;
+  color: var(--muted);
+  font-size: 0.95rem;
+}
+
+.legend-dot {
+  display: inline-block;
+  width: 12px;
+  height: 12px;
+  border-radius: 999px;
+  margin-right: 7px;
+}
+
+.alliance-dot {
+  background: #0f5132;
+}
+
+.initiative-dot {
+  background: #b66a00;
+}
+
+.custom-marker {
+  width: 18px;
+  height: 18px;
+  border-radius: 999px;
+  border: 2px solid white;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.25);
+}
+
+.custom-marker.alliance {
+  background: #0f5132;
+}
+
+.custom-marker.initiative {
+  background: #b66a00;
+}

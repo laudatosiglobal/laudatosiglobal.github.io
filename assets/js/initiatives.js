@@ -1,9 +1,9 @@
-let initiatives = [];
+let records = [];
 let filtered = [];
 let map;
 let markers;
 
-const fields = {
+const initiativeFields = {
   name: "Initiative / Organization",
   type: "Type",
   location: "Location",
@@ -19,6 +19,19 @@ const fields = {
   lon: "Longitude"
 };
 
+const memberFields = {
+  name: "Name",
+  institution: "Institution",
+  department: "Department",
+  discipline: "Discipline",
+  specializations: "Research Specializations",
+  city: "City",
+  country: "Country",
+  region: "Region",
+  lat: "Latitude",
+  lon: "Longitude"
+};
+
 function clean(value) {
   return value === undefined || value === null ? "" : String(value).trim();
 }
@@ -27,9 +40,9 @@ function uniqueValues(rows, field) {
   return [...new Set(rows.map(row => clean(row[field])).filter(Boolean))].sort();
 }
 
-function populateSelect(id, values) {
+function populateSelect(id, values, label) {
   const select = document.getElementById(id);
-  select.innerHTML = `<option value="">All</option>`;
+  select.innerHTML = `<option value="">${label}</option>`;
 
   values.forEach(value => {
     const option = document.createElement("option");
@@ -51,74 +64,114 @@ function initMap() {
   map.addLayer(markers);
 }
 
+function normalizeInitiative(row) {
+  return {
+    category: "Initiative / Organization",
+    name: clean(row[initiativeFields.name]),
+    subtitle: clean(row[initiativeFields.type]),
+    location: clean(row[initiativeFields.location]),
+    country: clean(row[initiativeFields.country]),
+    region: clean(row[initiativeFields.region]),
+    description1Title: "Goals",
+    description1: clean(row[initiativeFields.goals]),
+    description2Title: "Major Activities",
+    description2: clean(row[initiativeFields.activities]),
+    description3Title: "Key Outcomes / Accomplishments",
+    description3: clean(row[initiativeFields.outcomes]),
+    contact: clean(row[initiativeFields.contact]),
+    website: clean(row[initiativeFields.website]),
+    latitude: parseFloat(clean(row[initiativeFields.lat])),
+    longitude: parseFloat(clean(row[initiativeFields.lon])),
+    searchText: Object.values(row).join(" ").toLowerCase()
+  };
+}
+
+function normalizeMember(row) {
+  const specializations = [
+    clean(row["Research Specializations"]),
+    clean(row["Unnamed: 5"]),
+    clean(row["Unnamed: 6"])
+  ].filter(Boolean).join("; ");
+
+  return {
+    category: "Alliance Member",
+    name: clean(row[memberFields.name]),
+    subtitle: clean(row[memberFields.institution]),
+    location: clean(row[memberFields.city]),
+    country: clean(row[memberFields.country]),
+    region: clean(row[memberFields.region]),
+    description1Title: "Department",
+    description1: clean(row[memberFields.department]),
+    description2Title: "Discipline",
+    description2: clean(row[memberFields.discipline]),
+    description3Title: "Research Specializations",
+    description3: specializations,
+    contact: "",
+    website: "",
+    latitude: parseFloat(clean(row[memberFields.lat])),
+    longitude: parseFloat(clean(row[memberFields.lon])),
+    searchText: Object.values(row).join(" ").toLowerCase()
+  };
+}
+
 function hasCoordinates(row) {
-  const lat = parseFloat(clean(row[fields.lat]));
-  const lon = parseFloat(clean(row[fields.lon]));
-  return Number.isFinite(lat) && Number.isFinite(lon);
+  return Number.isFinite(row.latitude) && Number.isFinite(row.longitude);
+}
+
+function markerIcon(category) {
+  const markerClass = category === "Alliance Member" ? "alliance" : "initiative";
+
+  return L.divIcon({
+    className: "",
+    html: `<div class="custom-marker ${markerClass}"></div>`,
+    iconSize: [18, 18],
+    iconAnchor: [9, 9]
+  });
 }
 
 function selectedCardHtml(row) {
-  const name = clean(row[fields.name]) || "Initiative";
-  const type = clean(row[fields.type]);
-  const location = clean(row[fields.location]);
-  const country = clean(row[fields.country]);
-  const region = clean(row[fields.region]);
-  const leadership = clean(row[fields.leadership]);
-  const goals = clean(row[fields.goals]);
-  const activities = clean(row[fields.activities]);
-  const outcomes = clean(row[fields.outcomes]);
-  const website = clean(row[fields.website]);
-  const contact = clean(row[fields.contact]);
-
   return `
     <article class="initiative-detail-card">
-      <div class="card-kicker">Selected Initiative</div>
-      <h2>${name}</h2>
+      <div class="card-kicker">${row.category}</div>
+      <h2>${row.name || "Record"}</h2>
 
       <div class="initiative-meta">
-        ${type ? `<span>${type}</span>` : ""}
-        ${location ? `<span>${location}</span>` : ""}
-        ${country ? `<span>${country}</span>` : ""}
-        ${region ? `<span>${region}</span>` : ""}
+        ${row.subtitle ? `<span>${row.subtitle}</span>` : ""}
+        ${row.location ? `<span>${row.location}</span>` : ""}
+        ${row.country ? `<span>${row.country}</span>` : ""}
+        ${row.region ? `<span>${row.region}</span>` : ""}
       </div>
 
-      ${leadership ? `
+      ${row.description1 ? `
         <div class="detail-block">
-          <h3>Leadership</h3>
-          <p>${leadership}</p>
+          <h3>${row.description1Title}</h3>
+          <p>${row.description1}</p>
         </div>
       ` : ""}
 
-      ${goals ? `
+      ${row.description2 ? `
         <div class="detail-block">
-          <h3>Goals</h3>
-          <p>${goals}</p>
+          <h3>${row.description2Title}</h3>
+          <p>${row.description2}</p>
         </div>
       ` : ""}
 
-      ${activities ? `
+      ${row.description3 ? `
         <div class="detail-block">
-          <h3>Major Activities</h3>
-          <p>${activities}</p>
+          <h3>${row.description3Title}</h3>
+          <p>${row.description3}</p>
         </div>
       ` : ""}
 
-      ${outcomes ? `
-        <div class="detail-block">
-          <h3>Key Outcomes / Accomplishments</h3>
-          <p>${outcomes}</p>
-        </div>
-      ` : ""}
-
-      ${contact ? `
+      ${row.contact ? `
         <div class="detail-block">
           <h3>Contact</h3>
-          <p>${contact}</p>
+          <p>${row.contact}</p>
         </div>
       ` : ""}
 
-      ${website ? `
-        <a class="button detail-button" href="${website}" target="_blank" rel="noopener">
+      ${row.website ? `
+        <a class="button detail-button" href="${row.website}" target="_blank" rel="noopener">
           Visit website
         </a>
       ` : ""}
@@ -138,49 +191,44 @@ function updateMarkers(rows) {
   const coordinateRows = rows.filter(hasCoordinates);
 
   coordinateRows.forEach(row => {
-    const lat = parseFloat(clean(row[fields.lat]));
-    const lon = parseFloat(clean(row[fields.lon]));
+    const marker = L.marker(
+      [row.latitude, row.longitude],
+      { icon: markerIcon(row.category) }
+    );
 
-    const marker = L.marker([lat, lon]);
-
-    marker.on("click", () => {
-      updateSelectedCard(row);
-    });
-
-    marker.bindTooltip(clean(row[fields.name]) || "Initiative");
+    marker.on("click", () => updateSelectedCard(row));
+    marker.bindTooltip(row.name || row.subtitle || "Record");
     markers.addLayer(marker);
   });
 
   if (coordinateRows.length > 0) {
     const group = L.featureGroup(markers.getLayers());
     map.fitBounds(group.getBounds().pad(0.15));
-  }
-
-  const panel = document.getElementById("selectedInitiative");
-  if (coordinateRows.length === 0) {
-    panel.innerHTML = `<p>No mapped initiatives match the selected filters.</p>`;
+    document.getElementById("selectedInitiative").innerHTML =
+      `<p>Select a marker on the map to view details.</p>`;
   } else {
-    panel.innerHTML = `<p>Select an initiative on the map to view details.</p>`;
+    document.getElementById("selectedInitiative").innerHTML =
+      `<p>No mapped records match the selected filters.</p>`;
   }
 }
 
 function updateStats(rows) {
   document.getElementById("stat-total").textContent = rows.length;
-  document.getElementById("stat-countries").textContent = uniqueValues(rows, fields.country).length;
-  document.getElementById("stat-regions").textContent = uniqueValues(rows, fields.region).length;
+  document.getElementById("stat-countries").textContent = uniqueValues(rows, "country").length;
+  document.getElementById("stat-regions").textContent = uniqueValues(rows, "region").length;
 }
 
 function applyFilters() {
   const q = clean(document.getElementById("searchInput").value).toLowerCase();
+  const category = clean(document.getElementById("categoryFilter").value);
   const region = clean(document.getElementById("regionFilter").value);
   const country = clean(document.getElementById("countryFilter").value);
 
-  filtered = initiatives.filter(row => {
-    const combined = Object.values(row).join(" ").toLowerCase();
-
-    return (!q || combined.includes(q)) &&
-           (!region || clean(row[fields.region]) === region) &&
-           (!country || clean(row[fields.country]) === country);
+  filtered = records.filter(row => {
+    return (!q || row.searchText.includes(q)) &&
+           (!category || row.category === category) &&
+           (!region || row.region === region) &&
+           (!country || row.country === country);
   });
 
   updateStats(filtered);
@@ -188,10 +236,11 @@ function applyFilters() {
 }
 
 function setupFilters() {
-  populateSelect("regionFilter", uniqueValues(initiatives, fields.region));
-  populateSelect("countryFilter", uniqueValues(initiatives, fields.country));
+  populateSelect("categoryFilter", uniqueValues(records, "category"), "All categories");
+  populateSelect("regionFilter", uniqueValues(records, "region"), "All regions");
+  populateSelect("countryFilter", uniqueValues(records, "country"), "All countries");
 
-  ["searchInput", "regionFilter", "countryFilter"].forEach(id => {
+  ["searchInput", "categoryFilter", "regionFilter", "countryFilter"].forEach(id => {
     const element = document.getElementById(id);
     element.addEventListener("input", applyFilters);
     element.addEventListener("change", applyFilters);
@@ -201,20 +250,30 @@ function setupFilters() {
 document.addEventListener("DOMContentLoaded", () => {
   initMap();
 
-  Papa.parse("data/initiatives.csv", {
-    download: true,
-    header: true,
-    skipEmptyLines: true,
-    complete: results => {
-      initiatives = results.data.filter(row => clean(row[fields.name]));
+  Promise.all([
+    new Promise(resolve => {
+      Papa.parse("data/initiatives.csv", {
+        download: true,
+        header: true,
+        skipEmptyLines: true,
+        complete: results => resolve(results.data.map(normalizeInitiative))
+      });
+    }),
 
-      setupFilters();
-      updateStats(initiatives);
-      updateMarkers(initiatives);
-    },
-    error: error => {
-      document.getElementById("selectedInitiative").innerHTML =
-        `<p>Could not load initiatives.csv: ${error.message}</p>`;
-    }
+    new Promise(resolve => {
+      Papa.parse("data/alliance_members.csv", {
+        download: true,
+        header: true,
+        skipEmptyLines: true,
+        complete: results => resolve(results.data.map(normalizeMember))
+      });
+    })
+  ]).then(([initiatives, members]) => {
+    records = [...initiatives, ...members].filter(row => row.name || row.subtitle);
+    filtered = records;
+
+    setupFilters();
+    updateStats(records);
+    updateMarkers(records);
   });
 });

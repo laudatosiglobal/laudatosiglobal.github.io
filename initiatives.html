@@ -14,13 +14,13 @@
 
 <body>
   <header class="site-header">
-    <a class="logo" href="/"">Global Alliance<br>for Laudato Si’</a>
+    <a class="logo" href="/">Global Alliance<br>for Laudato Si’</a>
     <nav>
-      <a href="index.html">Home</a>
-      <a href="index.html#about">About</a>
+      <a href="/">Home</a>
+      <a href="/#about">About</a>
       <a href="initiatives.html">Initiatives</a>
       <a href="/#news">News & Media</a>
-      <a href="index.html#contact">Contact</a>
+      <a href="/#contact">Contact</a>
     </nav>
   </header>
 
@@ -29,47 +29,57 @@
       <div class="content">
         <h1>Explore initiatives</h1>
         <p>
-          Search and explore initiatives, universities, partners and sustainability
-          leaders connected to the Global Alliance for Laudato Si’.
+          Search and explore Alliance members, initiatives, universities, partners
+          and sustainability leaders connected to the Global Alliance for Laudato Si’.
         </p>
       </div>
     </section>
 
     <section class="directory-section">
-  <div class="content">
+      <div class="content">
 
-    <div class="directory-controls">
-      <div class="stats">
-        <div><strong id="stat-total">0</strong><span>Initiatives</span></div>
-        <div><strong id="stat-countries">0</strong><span>Countries</span></div>
-        <div><strong id="stat-regions">0</strong><span>Regions</span></div>
+        <div class="directory-controls">
+          <div class="stats">
+            <div><strong id="stat-total">0</strong><span>Total records</span></div>
+            <div><strong id="stat-countries">0</strong><span>Countries</span></div>
+            <div><strong id="stat-regions">0</strong><span>Regions</span></div>
+          </div>
+
+          <div class="filters">
+            <input id="searchInput" type="search" placeholder="Search by name, institution, location, country, or keyword" />
+            <select id="categoryFilter">
+              <option value="">All categories</option>
+            </select>
+            <select id="regionFilter">
+              <option value="">All regions</option>
+            </select>
+            <select id="countryFilter">
+              <option value="">All countries</option>
+            </select>
+          </div>
+        </div>
+
+        <div class="map-legend">
+          <span><i class="legend-dot alliance-dot"></i> Alliance members</span>
+          <span><i class="legend-dot initiative-dot"></i> Initiatives / organizations</span>
+        </div>
+
+        <div class="map-instruction">
+          Select a marker on the map to view details.
+        </div>
+
+        <div class="map-full">
+          <div id="map"></div>
+        </div>
+
+        <div id="selectedInitiative" class="selected-card"></div>
+
       </div>
-
-      <div class="filters">
-        <input id="searchInput" type="search" placeholder="Search by initiative, location, country, or keyword" />
-        <select id="regionFilter"><option value="">All regions</option></select>
-        <select id="countryFilter"><option value="">All countries</option></select>
-      </div>
-    </div>
-
-    <div class="map-instruction">
-  Select an initiative on the map to view details.
-    </div>
-
-    <div class="map-full">
-      <div id="map"></div>
-    </div>
-
-    <div id="selectedInitiative" class="selected-card">
-    </div>
-
-  </div>
-</section>
-
+    </section>
   </main>
 
   <footer>
-     © 2026 Just Transformations to Sustainability.
+    © 2026 Just Transformations to Sustainability.
   </footer>
 
   <script src="https://unpkg.com/papaparse@5.4.1/papaparse.min.js"></script>
