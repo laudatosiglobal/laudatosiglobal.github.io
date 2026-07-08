@@ -60,19 +60,27 @@ function initMap() {
     attribution: "&copy; OpenStreetMap contributors"
   }).addTo(map);
 
-  markers = L.markerClusterGroup({
-    maxClusterRadius: 35,
-    spiderfyOnMaxZoom: true,
-    showCoverageOnHover: false,
-    zoomToBoundsOnClick: false,
-    disableClusteringAtZoom: 8
-  });
+markers = L.markerClusterGroup({
+  maxClusterRadius: 35,
+  spiderfyOnMaxZoom: true,
+  showCoverageOnHover: false,
+  zoomToBoundsOnClick: false,
+  disableClusteringAtZoom: 8,
 
-  markers.on("clusterclick", function (event) {
-    const childMarkers = event.layer.getAllChildMarkers();
-    const rows = childMarkers.map(marker => marker.record).filter(Boolean);
-    showClusterList(rows);
-  });
+  iconCreateFunction: function (cluster) {
+    return L.divIcon({
+      html: `<div class="neutral-cluster">${cluster.getChildCount()}</div>`,
+      className: "neutral-cluster-wrapper",
+      iconSize: [40, 40]
+    });
+  }
+});
+
+markers.on("clusterclick", function (event) {
+  const childMarkers = event.layer.getAllChildMarkers();
+  const rows = childMarkers.map(marker => marker.record).filter(Boolean);
+  showClusterList(rows);
+});
 
   map.addLayer(markers);
 }
