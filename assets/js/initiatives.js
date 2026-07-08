@@ -61,12 +61,19 @@ function initMap() {
   }).addTo(map);
 
   markers = L.markerClusterGroup({
-  maxClusterRadius: 35,
-  spiderfyOnMaxZoom: true,
-  showCoverageOnHover: false,
-  zoomToBoundsOnClick: true,
-  disableClusteringAtZoom: 8
-});
+    maxClusterRadius: 35,
+    spiderfyOnMaxZoom: true,
+    showCoverageOnHover: false,
+    zoomToBoundsOnClick: false,
+    disableClusteringAtZoom: 8
+  });
+
+  markers.on("clusterclick", function (event) {
+    const childMarkers = event.layer.getAllChildMarkers();
+    const rows = childMarkers.map(marker => marker.record).filter(Boolean);
+    showClusterList(rows);
+  });
+
   map.addLayer(markers);
 }
 
@@ -191,6 +198,36 @@ function updateSelectedCard(row) {
   panel.scrollIntoView({ behavior: "smooth", block: "nearest" });
 }
 
+function showClusterList(rows) {
+  const panel = document.getElementById("selectedInitiative");
+
+  panel.innerHTML = `
+    <article class="initiative-detail-card">
+      <div class="card-kicker">Cluster</div>
+      <h2>${rows.length} records in this area</h2>
+      <p>Select one record below to view details.</p>
+
+      <div class="cluster-list">
+        ${rows.map((row, index) => `
+          <button class="cluster-item" data-index="${index}">
+            <strong>${row.name || "Record"}</strong>
+            <span>${[row.category, row.subtitle, row.location, row.country].filter(Boolean).join(" · ")}</span>
+          </button>
+        `).join("")}
+      </div>
+    </article>
+  `;
+
+  panel.querySelectorAll(".cluster-item").forEach(button => {
+    button.addEventListener("click", () => {
+      const index = Number(button.dataset.index);
+      updateSelectedCard(rows[index]);
+    });
+  });
+
+  panel.scrollIntoView({ behavior: "smooth", block: "nearest" });
+}
+
 function updateMarkers(rows) {
   markers.clearLayers();
 
@@ -201,6 +238,8 @@ function updateMarkers(rows) {
       [row.latitude, row.longitude],
       { icon: markerIcon(row.category) }
     );
+
+    marker.record = row;
 
     marker.on("click", () => updateSelectedCard(row));
     marker.bindTooltip(row.name || row.subtitle || "Record");
@@ -282,4 +321,4 @@ document.addEventListener("DOMContentLoaded", () => {
     updateStats(records);
     updateMarkers(records);
   });
-});
+});s
