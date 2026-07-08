@@ -78,18 +78,12 @@ function initMap() {
     }
   });
 
-  markers.on("clusterclick", function (event) {
-    const childMarkers = event.layer.getAllChildMarkers();
-    const rows = childMarkers.map(marker => marker.record).filter(Boolean);
+ markers.on("clusterclick", function (event) {
+  const childMarkers = event.layer.getAllChildMarkers();
+  const rows = childMarkers.map(marker => marker.record).filter(Boolean);
 
-    showClusterList(rows);
-
-    L.DomEvent.preventDefault(event);
-    return false;
-  });
-
-  map.addLayer(markers);
-}
+  showClusterList(rows);
+});
 
 function normalizeInitiative(row) {
   return {
