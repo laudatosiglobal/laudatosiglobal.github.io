@@ -60,7 +60,13 @@ function initMap() {
     attribution: "&copy; OpenStreetMap contributors"
   }).addTo(map);
 
-  markers = L.markerClusterGroup();
+  markers = L.markerClusterGroup({
+  maxClusterRadius: 35,
+  spiderfyOnMaxZoom: true,
+  showCoverageOnHover: false,
+  zoomToBoundsOnClick: true,
+  disableClusteringAtZoom: 8
+});
   map.addLayer(markers);
 }
 

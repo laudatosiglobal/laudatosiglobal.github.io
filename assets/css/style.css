@@ -512,3 +512,17 @@ footer {
 .custom-marker.initiative {
   background: #b66a00;
 }
+
+.marker-cluster-small,
+.marker-cluster-medium,
+.marker-cluster-large {
+  background-color: rgba(15, 81, 50, 0.18);
+}
+
+.marker-cluster-small div,
+.marker-cluster-medium div,
+.marker-cluster-large div {
+  background-color: #0f5132;
+  color: #ffffff;
+  font-weight: 700;
+}
