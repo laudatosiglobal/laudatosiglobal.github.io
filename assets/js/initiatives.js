@@ -4,6 +4,7 @@ let map;
 let markers;
 
 let previousClusterHtml = "";
+let currentClusterRows = [];
 
 const initiativeFields = {
   name: "Initiative / Organization",
@@ -78,12 +79,14 @@ function initMap() {
     }
   });
 
- markers.on("clusterclick", function (event) {
-  const childMarkers = event.layer.getAllChildMarkers();
-  const rows = childMarkers.map(marker => marker.record).filter(Boolean);
+  markers.on("clusterclick", function (event) {
+    const childMarkers = event.layer.getAllChildMarkers();
+    const rows = childMarkers.map(marker => marker.record).filter(Boolean);
+    showClusterList(rows);
+  });
 
-  showClusterList(rows);
-});
+  map.addLayer(markers);
+}
 
 function normalizeInitiative(row) {
   return {
@@ -224,7 +227,6 @@ function showPreviousCluster() {
   });
 }
 
-let currentClusterRows = [];
 
 function showClusterList(rows) {
   const panel = document.getElementById("selectedInitiative");
