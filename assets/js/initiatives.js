@@ -58,11 +58,11 @@ function populateSelect(id, values, label) {
 function initMap() {
   map = L.map("map", { scrollWheelZoom: true }).setView([20, 0], 2);
 
-  L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", {
+  L.tileLayer("https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png", {
     maxZoom: 18,
-    attribution: "&copy; OpenStreetMap contributors"
+    attribution: "&copy; OpenStreetMap contributors &copy; CARTO"
   }).addTo(map);
-
+  
   markers = L.markerClusterGroup({
     maxClusterRadius: 35,
     spiderfyOnMaxZoom: true,
@@ -212,7 +212,6 @@ function selectedCardHtml(row) {
 function updateSelectedCard(row) {
   const panel = document.getElementById("selectedInitiative");
   panel.innerHTML = selectedCardHtml(row);
-  panel.scrollIntoView({ behavior: "smooth", block: "nearest" });
 }
 
 function showPreviousCluster() {
@@ -258,8 +257,6 @@ function showClusterList(rows) {
       updateSelectedCard(rows[index]);
     });
   });
-
-  panel.scrollIntoView({ behavior: "smooth", block: "nearest" });
 }
 
 function updateMarkers(rows) {
