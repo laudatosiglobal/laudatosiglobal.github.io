@@ -208,11 +208,21 @@ function selectedCardHtml(row) {
     </article>
   `;
 }
+function scrollToDetailsPanel() {
+  const panel = document.getElementById("selectedInitiative");
+  const headerOffset = 120;
+  const panelTop = panel.getBoundingClientRect().top + window.pageYOffset;
+
+  window.scrollTo({
+    top: panelTop - headerOffset,
+    behavior: "smooth"
+  });
+}
 
 function updateSelectedCard(row) {
   const panel = document.getElementById("selectedInitiative");
   panel.innerHTML = selectedCardHtml(row);
-  panel.scrollIntoView({ behavior: "smooth", block: "start" });
+  scrollToDetailsPanel();
 }
 
 function showPreviousCluster() {
@@ -226,7 +236,6 @@ function showPreviousCluster() {
     });
   });
 }
-
 
 function showClusterList(rows) {
   const panel = document.getElementById("selectedInitiative");
@@ -258,7 +267,9 @@ function showClusterList(rows) {
       updateSelectedCard(rows[index]);
     });
   });
-  panel.scrollIntoView({ behavior: "smooth", block: "start" });
+
+  scrollToDetailsPanel();
+  
 }
 
 function updateMarkers(rows) {
