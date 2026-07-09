@@ -283,7 +283,7 @@ function updateMarkers(rows) {
 
   if (coordinateRows.length > 0) {
     const group = L.featureGroup(markers.getLayers());
-    map.fitBounds(group.getBounds().pad(0.08), { maxZoom: 5 });
+    map.fitBounds(group.getBounds().pad(0.05), { maxZoom: 4 });
 
     document.getElementById("selectedInitiative").innerHTML =
       `<p>Select a marker or cluster on the map to view details.</p>`;
