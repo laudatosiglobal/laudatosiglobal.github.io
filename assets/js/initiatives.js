@@ -212,6 +212,7 @@ function selectedCardHtml(row) {
 function updateSelectedCard(row) {
   const panel = document.getElementById("selectedInitiative");
   panel.innerHTML = selectedCardHtml(row);
+  panel.scrollIntoView({ behavior: "smooth", block: "start" });
 }
 
 function showPreviousCluster() {
@@ -257,6 +258,7 @@ function showClusterList(rows) {
       updateSelectedCard(rows[index]);
     });
   });
+  panel.scrollIntoView({ behavior: "smooth", block: "start" });
 }
 
 function updateMarkers(rows) {
@@ -275,8 +277,16 @@ function updateMarkers(rows) {
     marker.on("click", () => {
       previousClusterHtml = "";
       updateSelectedCard(row);
-    });
 
+    map.flyTo(
+      [row.latitude, row.longitude],
+      6,
+      {
+        animate: true,
+        duration: 0.7
+      }
+    );
+    });
     marker.bindTooltip(row.name || row.subtitle || "Record");
     markers.addLayer(marker);
   });
